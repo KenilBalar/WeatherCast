@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+
+#    Defines when the workflow should run:
+#    ✅ When someone pushes to the main branch
+#    ✅ When a pull request is opened that targets the main branch
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+
+#  Defines a job named build that runs on a Linux virtual machine (ubuntu-latest) provided by GitHub.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+#  It Downloads GitHub repository (project code) into the virtual machine so GitHub Actions can build it
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+#  Sets up the JDK into the virtual machine so app can be built.
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+#  Makes the gradlew file executable, which is necessary to run Gradle commands on Linux.
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+#  Runs the Gradle build task, which compiles app and all dependencies.
+      - name: Build with Gradle
+        run: ./gradlew build
+
+#  Executes unit tests for app using Gradle. Fails the workflow if any test fails.
+      - name: Run Unit Tests
+        run: ./gradlew test
