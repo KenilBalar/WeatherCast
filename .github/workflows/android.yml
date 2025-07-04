@@ -38,6 +38,13 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v3
       - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-${{ hashFiles('**/.lock') }}
+          restore-keys: |
+            gradle-${{ runner.os }}
 
 #  Sets up the JDK into the virtual machine so app can be built.
       - name: Set up JDK 17
@@ -50,6 +57,5 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@ce999babab2de1c4b649dc15f0ee67e6246c994f
 
-#  Executes unit tests for app using Gradle. Fails the workflow if any test fails.
-#      - name: Run Unit Tests
-#        run: ./gradlew test
+        with:
+          arguments: ${{ matrix.target }}
