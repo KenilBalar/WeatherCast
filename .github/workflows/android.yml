@@ -1,9 +1,5 @@
 name: CI Pipeline
 
-
-#    Defines when the workflow should run:
-#    ✅ When someone pushes to the main branch
-#    ✅ When a pull request is opened that targets the main branch
 on:
   push:
     branches: [ "main" ]
@@ -14,7 +10,6 @@ on:
 permissions:
   contents: read
 
-#  Defines a job named build that runs on a Linux virtual machine (ubuntu-latest) provided by GitHub.
 jobs:
   build:
     strategy:
@@ -30,32 +25,32 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
 
-#  It Downloads GitHub repository (project code) into the virtual machine so GitHub Actions can build it
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@v3
+
       - uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-${{ hashFiles('**/.lock') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}
 
-#  Sets up the JDK into the virtual machine so app can be built.
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-#  Runs the Gradle build task, which compiles app and all dependencies.
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@ce999babab2de1c4b649dc15f0ee67e6246c994f
-
         with:
           arguments: ${{ matrix.target }}
