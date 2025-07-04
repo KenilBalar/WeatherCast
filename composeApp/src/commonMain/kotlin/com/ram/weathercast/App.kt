@@ -23,6 +23,7 @@ import weathercast.composeapp.generated.resources.compose_multiplatform
 fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
+
         Column(
             modifier = Modifier
                 .safeContentPadding()
